@@ -11,9 +11,9 @@ ext_phone_pattern = re.compile(r'\(?\w+\.\s(\d{4})\)?')
 with open("phonebook_raw.csv") as f:
     rows = csv.reader(f, delimiter=",")
     contacts_list = list(rows)
-new_contact_list = [] #'lastname', 'firstname', 'surname', 'organization', 'position', 'phone', 'email']
-lastnamelist = []
-contact_dict = {}
+
+new_contact_list = []
+
 for string in contacts_list:
     surname = string[2].split()
     firstname = string[1].split()
@@ -29,7 +29,6 @@ for string in contacts_list:
         surname = lastname[2]
         firstname = lastname[1]
         lastname = lastname[0]
-
     if len(lastname) == 2:
         firstname = lastname[1]
         lastname = lastname[0]
@@ -43,43 +42,23 @@ for string in contacts_list:
         surname = firstname[1]
         firstname = firstname[0]
 
-
     new_contact_string = [lastname, firstname, surname, organization, position, phone, email]
     new_contact_list.append(new_contact_string)
 
-'''
-Попытка запилить через словарь
+for contact_split_1 in new_contact_list:
+    for contact_split_2 in new_contact_list:
+        if contact_split_1[0] == contact_split_2[0] \
+                and contact_split_1[1] == contact_split_2[1] \
+                and contact_split_1 != contact_split_2:
+            num = 0
+            for field in contact_split_1:
+                num = contact_split_1.index(field, num)
+                if (contact_split_1[num] != contact_split_2[num]) \
+                        and (contact_split_1[num] == ''):
+                    contact_split_1[num] = contact_split_2[num]
+            new_contact_list.remove(contact_split_2)
 
-    string_dict = {
-        lastname:
-            {
-            'firstname': firstname,
-            'surname': surname,
-            'organization': organization,
-            'position': position,
-            'phone': phone,
-            'email': email}
-    }
-    # print(string_dict)
-    for key, value in string_dict.items():
-        if key in contact_dict.keys():
-            if value:
-                string_dict[key].update(value)
-                print(key, value)
-        else:
-            contact_dict.update(string_dict)
-pprint(contact_dict)
-'''
 
-pprint(new_contact_list)
-
-''' Пытаюсь понять как проходя по списку проверять что такое значение уже было получено ранее и 
-если поле непустое то заполнить его.
-'''
-# for item in new_contact_list:
-#     for piese in item:
-#         if piese:
-#             print(piese)
-# with open("phonebook.csv", "w") as f:
-#     datawriter = csv.writer(f, delimiter=',')
-#     datawriter.writerows(new_contact_list)
+with open("phonebook.csv", "w") as f:
+    datawriter = csv.writer(f, delimiter=',')
+    datawriter.writerows(new_contact_list)
